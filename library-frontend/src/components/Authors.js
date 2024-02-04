@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import { ALL_AUTHORS, EDIT_AUTHOR } from "../queries";
 
@@ -9,8 +8,12 @@ const Authors = () => {
   });
   const authors = authorQuery.loading ? [] : authorQuery.data.allAuthors;
 
-  const [name, setName] = useState("");
-  const [born, setBorn] = useState("");
+  const setBorn = (e) => {
+    e.preventDefault();
+    const name = e.target.elements.name.value;
+    const setBornTo = Number(e.target.elements.born.value);
+    bornMutation({ variables: { name, setBornTo } });
+  };
 
   return (
     <div>
@@ -32,25 +35,20 @@ const Authors = () => {
         </tbody>
       </table>
       <h3>Set birthyear</h3>
-      <p>
-        name
-        <input value={name} onChange={({ target }) => setName(target.value)} />
-      </p>
-      <p>
-        born
-        <input
-          type="number"
-          value={born}
-          onChange={({ target }) => setBorn(target.value)}
-        />
-      </p>
-      <button
-        onClick={() =>
-          bornMutation({ variables: { name, setBornTo: Number(born) } })
-        }
-      >
-        update author
-      </button>
+      <form onSubmit={setBorn} id="setBornForm">
+        <select name="name" form="setBornForm">
+          {authors.map((a) => (
+            <option key={a.id} value={a.name}>
+              {a.name}
+            </option>
+          ))}
+        </select>
+        <p>
+          born
+          <input form="setBornForm" type="number" name="born" />
+        </p>
+        <button type="submit">update author</button>
+      </form>
     </div>
   );
 };
