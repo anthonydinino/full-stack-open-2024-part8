@@ -2,7 +2,6 @@ import Authors from "./components/Authors";
 import Books from "./components/Books";
 import NewBook from "./components/NewBook";
 import { Routes, Route, Link, Navigate } from "react-router-dom";
-import { gql, useQuery } from "@apollo/client";
 
 const App = () => {
   return (
