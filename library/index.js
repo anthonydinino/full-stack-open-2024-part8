@@ -5,11 +5,12 @@ const Book = require("./models/book");
 
 const { ApolloServer } = require("@apollo/server");
 const { startStandaloneServer } = require("@apollo/server/standalone");
+const { GraphQLError } = require("graphql");
 
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("connected to MongoDB"))
-  .catch((error) => console.log("error connection to MongoDB", error.message));
+  .catch((error) => console.log("error connecting to MongoDB", error.message));
 
 const typeDefs = `
   type Book {
@@ -41,9 +42,8 @@ const typeDefs = `
       author: String!
       genres: [String]!
     ): Book
+    addAuthor(name: String!, born: String): Author!
     editAuthor(name: String!, setBornTo: Int!): Author
-    tempBooks : String
-    tempAuthors: String
   }
 `;
 
@@ -71,7 +71,31 @@ const resolvers = {
         ...args,
         author: author._id,
       });
-      return await book.save();
+      try {
+        return await book.save();
+      } catch (error) {
+        throw new GraphQLError("Saving book failed", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args[Object.keys(error.errors)[0]],
+            error,
+          },
+        });
+      }
+    },
+    addAuthor: async (root, args) => {
+      const author = new Author({ name: args.name, born: args.born });
+      try {
+        return await author.save();
+      } catch (error) {
+        throw new GraphQLError("Saving author failed", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args[Object.keys(error.errors)[0]],
+            error,
+          },
+        });
+      }
     },
     editAuthor: async (root, args) =>
       await Author.findOneAndUpdate(
