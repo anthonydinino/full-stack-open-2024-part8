@@ -1,28 +1,50 @@
 import Authors from "./components/Authors";
 import Books from "./components/Books";
 import NewBook from "./components/NewBook";
-import { Routes, Route, Link, Navigate } from "react-router-dom";
+import Login from "./components/Login";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import { useState, useEffect } from "react";
 
 const App = () => {
+  const [token, setToken] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("library-user-token");
+    token && setToken(token);
+  }, []);
+
+  if (!token) {
+    return (
+      <Routes>
+        <Route
+          path="/login"
+          element={<Login setToken={setToken} errorState={[error, setError]} />}
+        />
+        <Route path="*" element={<Navigate to={"/login"} />} />
+      </Routes>
+    );
+  }
   return (
     <div>
-      <div>
-        <Link to="/authors">
-          <button>authors</button>
-        </Link>
-        <Link to="/books">
-          <button>books</button>
-        </Link>
-        <Link to="/add">
-          <button>add book</button>
-        </Link>
-      </div>
-
+      <Navbar setToken={setToken} />
+      {error ? <p style={{ color: "red" }}>{error}</p> : <></>}
       <Routes>
+        <Route path="/login" element={<Navigate to={"/authors"} />} />
         <Route path="/" element={<Navigate to={"/authors"} />} />
-        <Route path="/authors" element={<Authors />} />
-        <Route path="/books" element={<Books />} />
-        <Route path="/add" element={<NewBook />} />
+        <Route
+          path="/authors"
+          element={<Authors errorState={[error, setError]} />}
+        />
+        <Route
+          path="/books"
+          element={<Books errorState={[error, setError]} />}
+        />
+        <Route
+          path="/add"
+          element={<NewBook errorState={[error, setError]} />}
+        />
       </Routes>
     </div>
   );
