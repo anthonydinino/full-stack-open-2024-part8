@@ -3,14 +3,24 @@ import { useQuery } from "@apollo/client";
 import { ALL_BOOKS_GENRE, ME } from "../queries";
 import BookTable from "./BookTable";
 
-const Recommend = ({ errorState: [error, setError] }) => {
+const Recommend = ({ setError }) => {
   const [genre, setGenre] = useState("");
   const [books, setBooks] = useState([]);
 
-  const { loading: meLoading, data: meData } = useQuery(ME);
+  const { loading: meLoading, data: meData } = useQuery(ME, {
+    onError: (error) => {
+      setError(error.message);
+      setTimeout(() => setError(null), 3000);
+    },
+  });
+
   const { loading: booksLoading, data: booksData } = useQuery(ALL_BOOKS_GENRE, {
     variables: { genre },
     skip: !genre,
+    onError: (error) => {
+      setError(error.message);
+      setTimeout(() => setError(null), 3000);
+    },
   });
 
   useEffect(() => {

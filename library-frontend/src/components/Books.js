@@ -3,31 +3,39 @@ import { ALL_BOOKS_GENRE, ALL_GENRES } from "../queries";
 import { useEffect, useState } from "react";
 import BookTable from "./BookTable";
 
-const Books = ({ errorState: [error, setError] }) => {
+const Books = () => {
   const [genres, setGenres] = useState([]);
   const [genre, setGenre] = useState("");
   const [books, setBooks] = useState([]);
 
-  const booksQuery = useQuery(ALL_BOOKS_GENRE, {
+  const {
+    loading: booksLoading,
+    data: booksData,
+    refetch: booksRefetch,
+  } = useQuery(ALL_BOOKS_GENRE, {
     variables: { genre },
   });
 
-  const genresQuery = useQuery(ALL_GENRES);
+  const { loading: genresLoading, data: genresData } = useQuery(ALL_GENRES);
 
   useEffect(() => {
-    const { loading, data } = genresQuery;
-    if (!loading && data && data.allBooks) {
-      const flattenedGenres = data.allBooks.map((book) => book.genres).flat();
+    if (!genresLoading && genresData && genresData.allBooks) {
+      const flattenedGenres = genresData.allBooks
+        .map((book) => book.genres)
+        .flat();
       setGenres([...new Set(flattenedGenres)]);
     }
-  }, [genresQuery]);
+  }, [genresLoading, genresData]);
 
   useEffect(() => {
-    const { loading, data } = booksQuery;
-    if (!loading && data && data.allBooks) {
-      setBooks(data.allBooks);
+    if (!booksLoading && booksData && booksData.allBooks) {
+      setBooks(booksData.allBooks);
     }
-  }, [booksQuery]);
+  }, [booksLoading, booksData]);
+
+  useEffect(() => {
+    booksRefetch();
+  }, [genre, booksRefetch]);
 
   return (
     <div>

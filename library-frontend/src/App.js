@@ -33,22 +33,10 @@ const App = () => {
       {error ? <p style={{ color: "red" }}>{error}</p> : <></>}
       <Routes>
         <Route path="/login" element={<Navigate to={"/authors"} />} />
-        <Route
-          path="/authors"
-          element={<Authors errorState={[error, setError]} />}
-        />
-        <Route
-          path="/books"
-          element={<Books errorState={[error, setError]} />}
-        />
-        <Route
-          path="/add"
-          element={<NewBook errorState={[error, setError]} />}
-        />
-        <Route
-          path="/recommend"
-          element={<Recommend errorState={[error, setError]} />}
-        />
+        <Route path="/authors" element={<Authors setError={setError} />} />
+        <Route path="/books" element={<Books setError={setError} />} />
+        <Route path="/add" element={<NewBook setError={setError} />} />
+        <Route path="/recommend" element={<Recommend setError={setError} />} />
         <Route path="/" element={<Navigate to={"/authors"} />} />
       </Routes>
     </div>

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useMutation } from "@apollo/client";
-import { ADD_BOOK, ALL_AUTHORS, ALL_BOOKS } from "../queries";
+import { ADD_BOOK, ALL_AUTHORS, ALL_BOOKS_GENRE } from "../queries";
 import { useNavigate } from "react-router-dom";
 
-const NewBook = ({ errorState: [error, setError] }) => {
+const NewBook = ({ setError }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [published, setPublished] = useState("");
@@ -17,7 +17,7 @@ const NewBook = ({ errorState: [error, setError] }) => {
     event.preventDefault();
     await addBook({
       variables: { title, author, published: Number(published), genres },
-      refetchQueries: [{ query: ALL_AUTHORS }, { query: ALL_BOOKS }],
+      refetchQueries: [{ query: ALL_AUTHORS }, { query: ALL_BOOKS_GENRE }],
       onError: (error) => {
         setError(error.message);
         setTimeout(() => setError(null), 3000);

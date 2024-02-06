@@ -1,7 +1,7 @@
 import { useQuery, useMutation } from "@apollo/client";
 import { ALL_AUTHORS, EDIT_AUTHOR } from "../queries";
 
-const Authors = ({ errorState: [error, setError] }) => {
+const Authors = () => {
   const authorQuery = useQuery(ALL_AUTHORS);
   const [bornMutation] = useMutation(EDIT_AUTHOR, {
     refetchQueries: [{ query: ALL_AUTHORS }],
@@ -14,10 +14,6 @@ const Authors = ({ errorState: [error, setError] }) => {
     const setBornTo = Number(e.target.elements.born.value);
     bornMutation({
       variables: { name, setBornTo },
-      onError: (error) => {
-        setError(error.networkError.result.errors[0].message || error.message);
-        setTimeout(() => setError(null), 3000);
-      },
     });
   };
 
