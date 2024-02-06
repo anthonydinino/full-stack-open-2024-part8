@@ -22,7 +22,7 @@ const App = () => {
           path="/login"
           element={<Login setToken={setToken} errorState={[error, setError]} />}
         />
-        <Route path="*" element={<Navigate to={"/login"} />} />
+        <Route path="/" element={<Navigate to={"/login"} />} />
       </Routes>
     );
   }
@@ -32,7 +32,7 @@ const App = () => {
       {error ? <p style={{ color: "red" }}>{error}</p> : <></>}
       <Routes>
         <Route path="/login" element={<Navigate to={"/authors"} />} />
-        <Route path="/" element={<Navigate to={"/authors"} />} />
+
         <Route
           path="/authors"
           element={<Authors errorState={[error, setError]} />}
@@ -45,6 +45,7 @@ const App = () => {
           path="/add"
           element={<NewBook errorState={[error, setError]} />}
         />
+        <Route path="/" element={<Navigate to={"/authors"} />} />
       </Routes>
     </div>
   );
