@@ -5,6 +5,7 @@ import Login from "./components/Login";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import { useState, useEffect } from "react";
+import Recommend from "./components/Recommend";
 
 const App = () => {
   const [token, setToken] = useState(null);
@@ -32,7 +33,6 @@ const App = () => {
       {error ? <p style={{ color: "red" }}>{error}</p> : <></>}
       <Routes>
         <Route path="/login" element={<Navigate to={"/authors"} />} />
-
         <Route
           path="/authors"
           element={<Authors errorState={[error, setError]} />}
@@ -44,6 +44,10 @@ const App = () => {
         <Route
           path="/add"
           element={<NewBook errorState={[error, setError]} />}
+        />
+        <Route
+          path="/recommend"
+          element={<Recommend errorState={[error, setError]} />}
         />
         <Route path="/" element={<Navigate to={"/authors"} />} />
       </Routes>

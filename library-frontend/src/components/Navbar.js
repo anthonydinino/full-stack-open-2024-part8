@@ -21,7 +21,12 @@ const Navbar = ({ setToken }) => {
       <Link to="/add">
         <button>add book</button>
       </Link>
-      <button onClick={logout}>logout</button>
+      <Link to="/recommend">
+        <button>recommend</button>
+      </Link>
+      <Link to="/">
+        <button onClick={logout}>logout</button>
+      </Link>
     </div>
   );
 };
