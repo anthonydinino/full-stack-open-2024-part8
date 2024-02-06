@@ -1,23 +1,35 @@
+import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
-import { ALL_BOOKS, ME } from "../queries";
+import { ALL_BOOKS_GENRE, ME } from "../queries";
 import BookTable from "./BookTable";
 
 const Recommend = ({ errorState: [error, setError] }) => {
-  const meQuery = useQuery(ME);
-  const bookQuery = useQuery(ALL_BOOKS);
+  const [genre, setGenre] = useState("");
+  const [books, setBooks] = useState([]);
 
-  if (meQuery.loading || bookQuery.loading) {
-    return <p>...loading</p>;
-  }
+  const { loading: meLoading, data: meData } = useQuery(ME);
+  const { loading: booksLoading, data: booksData } = useQuery(ALL_BOOKS_GENRE, {
+    variables: { genre },
+    skip: !genre,
+  });
 
-  const books = bookQuery.data.allBooks;
-  const favoriteGenre = meQuery.data?.me?.favoriteGenre;
+  useEffect(() => {
+    if (!meLoading && meData && meData.me) {
+      setGenre(meData.me.favoriteGenre);
+    }
+  }, [meLoading, meData]);
+
+  useEffect(() => {
+    if (!booksLoading && booksData && booksData.allBooks) {
+      setBooks(booksData.allBooks);
+    }
+  }, [booksLoading, booksData]);
 
   return (
     <div>
       <h2>recommendations</h2>
       <p>
-        books in your favorite genre <b>{favoriteGenre}</b>
+        books in your favorite genre <b>{genre}</b>
       </p>
       <table>
         <tbody>
@@ -26,7 +38,7 @@ const Recommend = ({ errorState: [error, setError] }) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          <BookTable books={books} genre={favoriteGenre} />
+          <BookTable books={books} />
         </tbody>
       </table>
     </div>

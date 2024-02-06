@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { ALL_BOOKS } from "../queries";
+import { ALL_BOOKS_GENRE, ALL_GENRES } from "../queries";
 import { useEffect, useState } from "react";
 import BookTable from "./BookTable";
 
@@ -7,25 +7,27 @@ const Books = ({ errorState: [error, setError] }) => {
   const [genres, setGenres] = useState([]);
   const [genre, setGenre] = useState("");
   const [books, setBooks] = useState([]);
-  const result = useQuery(ALL_BOOKS, {
-    onCompleted: () => {
-      setBooks(result.data.allBooks);
-    },
+
+  const booksQuery = useQuery(ALL_BOOKS_GENRE, {
+    variables: { genre },
   });
 
+  const genresQuery = useQuery(ALL_GENRES);
+
   useEffect(() => {
-    setGenres(
-      Array.from(
-        new Set(
-          books
-            .map((book) => book.genres)
-            .reduce((a, c) => {
-              return c.concat([...a]);
-            }, [])
-        )
-      )
-    );
-  }, [books]);
+    const { loading, data } = genresQuery;
+    if (!loading && data && data.allBooks) {
+      const flattenedGenres = data.allBooks.map((book) => book.genres).flat();
+      setGenres([...new Set(flattenedGenres)]);
+    }
+  }, [genresQuery]);
+
+  useEffect(() => {
+    const { loading, data } = booksQuery;
+    if (!loading && data && data.allBooks) {
+      setBooks(data.allBooks);
+    }
+  }, [booksQuery]);
 
   return (
     <div>
@@ -43,7 +45,7 @@ const Books = ({ errorState: [error, setError] }) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          <BookTable books={books} genre={genre} />
+          <BookTable books={books} />
         </tbody>
       </table>
       {genres ? (
