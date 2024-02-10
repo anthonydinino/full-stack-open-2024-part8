@@ -81,3 +81,25 @@ export const ME = gql`
     }
   }
 `;
+
+export const BOOK_DETAILS = gql`
+  fragment BookDetails on Book {
+    id
+    title
+    published
+    author {
+      name
+      born
+    }
+    genres
+  }
+`;
+
+export const BOOK_ADDED = gql`
+  subscription BookAdded {
+    bookAdded {
+      ...BookDetails
+    }
+  }
+  ${BOOK_DETAILS}
+`;

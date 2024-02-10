@@ -7,6 +7,9 @@ import Navbar from "./components/Navbar";
 import { useState, useEffect } from "react";
 import Recommend from "./components/Recommend";
 
+import { BOOK_ADDED } from "./queries";
+import { useSubscription } from "@apollo/client";
+
 const App = () => {
   const [token, setToken] = useState(null);
   const [error, setError] = useState(null);
@@ -15,6 +18,15 @@ const App = () => {
     const token = localStorage.getItem("library-user-token");
     token && setToken(token);
   }, []);
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      const book = data.data.bookAdded;
+      window.alert(
+        `A new book ${book.title} by ${book.author.name} was added!`
+      );
+    },
+  });
 
   if (!token) {
     return (
