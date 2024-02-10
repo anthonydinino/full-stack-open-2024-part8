@@ -22,7 +22,8 @@ const Books = () => {
     if (!genresLoading && genresData && genresData.allBooks) {
       const flattenedGenres = genresData.allBooks
         .map((book) => book.genres)
-        .flat();
+        .flat()
+        .filter((b) => b);
       setGenres([...new Set(flattenedGenres)]);
     }
   }, [genresLoading, genresData]);
