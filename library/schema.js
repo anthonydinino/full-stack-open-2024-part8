@@ -39,7 +39,7 @@ const typeDefs = `
       author: String!
       genres: [String]!
     ): Book
-    addAuthor(name: String!, born: String): Author!
+    addAuthor(name: String!, born: Int): Author!
     editAuthor(name: String!, setBornTo: Int!): Author
     createUser(username: String!, favoriteGenre: String!): User
     login(username: String!, password: String!): Token

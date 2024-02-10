@@ -7,8 +7,23 @@ import Navbar from "./components/Navbar";
 import { useState, useEffect } from "react";
 import Recommend from "./components/Recommend";
 
-import { BOOK_ADDED } from "./queries";
+import { BOOK_ADDED, ALL_BOOKS_GENRE } from "./queries";
 import { useSubscription } from "@apollo/client";
+
+export const updateCache = (cache, query, addedBook) => {
+  const uniqByTitle = (a) => {
+    let seen = new Set();
+    return a.filter((item) => {
+      let k = item.title;
+      return seen.has(k) ? false : seen.add(k);
+    });
+  };
+  cache.updateQuery(query, (data) => {
+    const allBooks = data?.allBooks;
+    if (!allBooks) return;
+    return { allBooks: uniqByTitle(allBooks.concat(addedBook)) };
+  });
+};
 
 const App = () => {
   const [token, setToken] = useState(null);
@@ -20,10 +35,13 @@ const App = () => {
   }, []);
 
   useSubscription(BOOK_ADDED, {
-    onData: ({ data }) => {
-      const book = data.data.bookAdded;
-      window.alert(
-        `A new book ${book.title} by ${book.author.name} was added!`
+    onData: ({ data, client }) => {
+      const addedBook = data.data.bookAdded;
+      window.alert(`${addedBook.title} added!`);
+      updateCache(
+        client.cache,
+        { query: ALL_BOOKS_GENRE, variables: { genre: "" } },
+        addedBook
       );
     },
   });

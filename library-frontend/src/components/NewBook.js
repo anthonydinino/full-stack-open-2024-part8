@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { ADD_BOOK, ALL_AUTHORS, ALL_BOOKS_GENRE } from "../queries";
 import { useNavigate } from "react-router-dom";
+import { updateCache } from "../App";
 
 const NewBook = ({ setError }) => {
   const [title, setTitle] = useState("");
@@ -21,6 +22,9 @@ const NewBook = ({ setError }) => {
       onError: (error) => {
         setError(error.message);
         setTimeout(() => setError(null), 3000);
+      },
+      update: (cache, response) => {
+        updateCache(cache, { query: ALL_BOOKS_GENRE }, response.data.addBook);
       },
       onCompleted: (data) => {
         setTitle("");
